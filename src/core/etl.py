@@ -15,5 +15,5 @@ def process_file(file_path, processed_dir):
         print(f"⚠️ Unsupported file: {file_path.name}")
         return
 
-print_content(file_path.name, content)
-move_file(file_path, processed_dir / file_path.name)
+    print_content(file_path.name, content)
+    move_file(file_path, processed_dir / file_path.name)
