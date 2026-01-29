@@ -1,7 +1,8 @@
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
 
 WORKDIR /app
 
@@ -13,5 +14,5 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy application code
 COPY . .
 
-# Run CLI bot
-CMD ["python", "bot.py"]
+# Run ETL job (ENTRYPOINT)
+CMD ["python", "jobs/run_daily_etl.py"]

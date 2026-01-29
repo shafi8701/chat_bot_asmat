@@ -1,8 +1,0 @@
-services:
-  chatbot:
-    build: .
-    container_name: chat_bot_asmat
-    stdin_open: true
-    tty: true
-    env_file:
-      - .env

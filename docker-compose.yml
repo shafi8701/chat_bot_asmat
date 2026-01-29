@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  etl_worker:
+    build: .
+    container_name: etl_worker
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/app
+      - ./data:/app/data
