@@ -14,7 +14,7 @@ def process_file(file_path, processed_dir):
         reader_stream = read_txt_stream(file_path)
     else:
         print(f"⚠️ Unsupported file: {file_path.name}")
-    return
+        return
 
     chunker = get_chunker()
 
