@@ -1,11 +1,14 @@
 from pypdf import PdfReader
+from typing import Iterator
 
-def read_pdf(file_path):
+def read_pdf_stream(file_path) -> Iterator[str]:
+"""
+Streams raw text from PDF page-by-page.
+NO chunking happens here.
+"""
     reader = PdfReader(file_path)
-    content = []
-    for page in reader.pages:
-        text = page.extract_text()
-        if text:
-            content.append(text)
 
-    return "\n".join(content)
+    for page_num, page in enumerate(reader.pages, start=1):
+        text = page.extract_text() or ""
+        for line in text.splitlines():
+            yield line + "\n"
