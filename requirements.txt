@@ -3,3 +3,5 @@ requests==2.32.3
 rich==13.7.1
 pypdf
 pyyaml
+sentence-transformers>=2.2.2
+torch

@@ -22,6 +22,7 @@ class BGEEmbeddingService:
             text,
             normalize_embeddings=self.normalize
         )
+        print(f"🧠 Embedding text complete.")
         return vec.tolist()
 
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
