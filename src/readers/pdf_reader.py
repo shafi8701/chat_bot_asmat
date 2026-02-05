@@ -10,5 +10,4 @@ def read_pdf_stream(file_path) -> Iterator[str]:
 
     for page_num, page in enumerate(reader.pages, start=1):
         text = page.extract_text() or ""
-        for line in text.splitlines():
-            yield line + "\n"
+        yield text

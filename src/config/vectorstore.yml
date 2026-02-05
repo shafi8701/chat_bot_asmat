@@ -1,0 +1,9 @@
+backend: weaviate
+
+weaviate:
+  url: http://weaviate:8080
+  class_name: DocumentChunk
+  batch_size: 50
+
+faiss:
+  index_path: data/faiss.index

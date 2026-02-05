@@ -5,3 +5,4 @@ pypdf
 pyyaml
 sentence-transformers>=2.2.2
 torch
+weaviate-client>=4.5.0
