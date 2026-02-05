@@ -1,19 +1,35 @@
 import weaviate
-import time
+from weaviate.connect import ConnectionParams
 
-_CLIENTS = {}
+_client = None
+_current_url = None
 
 def get_weaviate_client(url: str):
-    if url in _CLIENTS:
-        return _CLIENTS[url]
+    global _client, _current_url
 
-    for _ in range(10):
-        try:
-            client = weaviate.Client(url)
-            if client.is_ready():
-                _CLIENTS[url] = client
-                return client
-        except Exception:
-            time.sleep(2)
+    # Reuse client if same URL
+    if _client is not None and _current_url == url:
+        return _client
 
-    raise RuntimeError("Weaviate not ready")
+    # Close old client if URL changed
+    if _client is not None:
+        _client.close()
+
+    _client = weaviate.WeaviateClient(
+        connection_params=ConnectionParams.from_url(
+            url=url,
+            grpc_port=50051,
+        )
+    )
+    _client.connect()
+    _current_url = url
+
+    return _client
+
+
+def close_weaviate_client():
+    global _client, _current_url
+    if _client is not None:
+        _client.close()
+        _client = None
+        _current_url = None
