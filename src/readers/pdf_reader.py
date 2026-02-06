@@ -7,7 +7,7 @@ def read_pdf_stream(file_path) -> Iterator[str]:
     NO chunking happens here.
     """
     reader = PdfReader(file_path)
-
+    
     for page_num, page in enumerate(reader.pages, start=1):
         text = page.extract_text() or ""
         yield text
