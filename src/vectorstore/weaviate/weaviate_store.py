@@ -1,5 +1,5 @@
 from src.vectorstore.base import VectorStore
-from src.vectorstore.weaviate_client import get_weaviate_client
+from src.vectorstore.weaviate.weaviate_client import get_weaviate_client
 
 import weaviate.classes as wvc
 

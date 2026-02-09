@@ -1,7 +1,7 @@
 import yaml
 from pathlib import Path
 
-from src.vectorstore.weaviate_store import WeaviateStore
+from src.vectorstore.weaviate.weaviate_store import WeaviateStore
 
 _VECTOR_STORE = None
 
