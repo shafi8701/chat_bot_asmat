@@ -1,13 +1,13 @@
 chunking:
-  method: overlap # fixed | overlap | paragraph
+  method: paragraph # fixed | overlap | paragraph
 
 fixed:
-  chunk_size: 1000
+  chunk_size: 10
 
 overlap:
-  chunk_size: 1000
-  overlap_size: 200
+  chunk_size: 10
+  overlap_size: 2
 
 paragraph:
-  min_length: 500
-  max_length: 1500
+  min_length: 5
+  max_length: 500

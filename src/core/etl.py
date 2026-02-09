@@ -23,40 +23,39 @@ def process_file(file_path, processed_dir):
 
     print(f"PDF Data Stream: {reader_stream}")
 
-    print(f"START: Creating chunking object")
     chunker = get_chunker()
-    print(f"END: Creating chunking object")
     
-    print(f"START: Creating Embedding object")
     embedder = get_embedder()
-    print(f"END: Creating Embedding object")
     
-    print(f"START: Creating Vector Store object")
-    #vector_store = get_vector_store()
-    print(f"END: Creating Vector Store object")
-
+    vector_store = get_vector_store()
+    
     chunks = list(chunker.chunk(reader_stream))
+    
+
     if not chunks:
         return
 
-    texts = [chunk.text for chunk in chunks]
+    # 🔥 ONE batch embedding
+    
+    vectors = embedder.embed_batch(chunks)
+    
     metadata = [
         {
             "source": file_path.name,
             "chunk_id": idx,
-            **chunk.metadata,
         }
         for idx, chunk in enumerate(chunks, start=1)
     ]
-
-    # 🔥 ONE batch embedding
-    vectors = embedder.embed_batch(texts)
+   
 
     # 🔥 ONE batch upsert
-    #vector_store.upsert(
-    #    texts=texts,
-    #    vectors=vectors,
-    #    metadata=metadata,
-    #)
 
-    move_file(file_path, processed_dir / file_path.name)
+    print(f"Update/Insert into vector DB.")
+    vector_store.upsert(
+        texts=chunks,
+        vectors=vectors,
+        metadata=metadata,
+    )
+    print(f"Update/Insert into vector DB complete.")
+
+    #move_file(file_path, processed_dir / file_path.name)

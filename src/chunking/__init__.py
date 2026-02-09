@@ -6,7 +6,6 @@ _chunking = None
 from src.chunking.fixed import FixedChunker
 from src.chunking.overlap import OverlapChunker
 from src.chunking.paragraph import ParagraphChunker
-from src.config import get_chunking_method, CONFIG
 
 #YAML convert to readable json config...
 import yaml
@@ -16,9 +15,6 @@ _CONFIG_PATH = Path("src/config/chunking.yaml")
 def _load_config():
     with open(_CONFIG_PATH, "r") as f:
         return yaml.safe_load(f)
-
-def get_chunking_method():
-    return CONFIG["chunking"]["method"]
 
 def get_chunker():
     """
@@ -33,21 +29,19 @@ def get_chunker():
     if _chunking is not None:
         return _chunking
     
-    config = _load_config();
-    method = get_chunking_method()
+    CONFIG = _load_config()
+
+    method = CONFIG["chunking"]["method"]
 
     if method == "fixed":
         cfg = CONFIG["fixed"]
         _chunking = FixedChunker(cfg["chunk_size"])
-
-    if method == "overlap":
+    elif method == "overlap":
         cfg = CONFIG["overlap"]
         _chunking = OverlapChunker(cfg["chunk_size"], cfg["overlap_size"])
-
-    if method == "paragraph":
+    elif method == "paragraph":
         cfg = CONFIG["paragraph"]
         _chunking = ParagraphChunker(cfg["min_length"], cfg["max_length"])
     else:
         raise ValueError(f"Unsupported chunking method: {method}")
-    
     return _chunking
