@@ -174,6 +174,46 @@ class WeaviateStore(VectorStore):
             print(f"Document Object: {obj}")
 
         return results
-    
+
+    def semanticSearch(self, query_vector: list[float], limit: int = 5):
+        """
+        Perform semantic (vector) search using near_vector.
+        Assumes embeddings are already generated outside this class.
+        """
+
+        response = self.collection.query.near_vector(
+            near_vector=query_vector,
+            limit=limit,
+            return_metadata=wvc.query.MetadataQuery(
+                distance=True,  # distance from query vector
+            )
+        )
+
+        results = []
+
+        for obj in getattr(response, "objects", []) or []:
+            props = getattr(obj, "properties", {}) or {}
+            metadata = getattr(obj, "metadata", {}) or {}
+
+            results.append({
+                "distance": getattr(metadata, "distance", None),
+                "id": getattr(obj, "uuid", None),
+                "text": props.get("text"),
+                "source": props.get("source"),
+                "chunk_id": props.get("chunk_id"),
+                "product_name": props.get("product_name"),
+            })
+
+        # 🔥 Sort by distance ASC (smaller distance = more similar)
+        results.sort(key=lambda x: x["distance"] or 9999)
+
+        # Add rank after sorting
+        for rank, obj in enumerate(results, start=1):
+            obj["rank"] = rank
+            print(f"Document Object: {obj}")
+
+        return results
+
+
     ##Interface functions...... 
     ###End

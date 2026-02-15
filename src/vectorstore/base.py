@@ -22,3 +22,9 @@ class VectorStore(ABC):
         query
     ):
         pass
+    
+    def semanticSearch(
+        self,
+        query
+    ):
+        pass

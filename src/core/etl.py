@@ -75,6 +75,10 @@ def process_file(file_path, processed_dir):
 
     #vector_store.getAllDocuments()
 
-    vector_store.keywordSearch("Bakhoor")
+    #vector_store.keywordSearch("Bakhoor")
+
+    user_query = "Arabic Perfume"
+    user_query_vector = embedder.embed(user_query)
+    vector_store.semanticSearch(user_query_vector)
 
     # move_file(file_path, processed_dir / file_path.name)
