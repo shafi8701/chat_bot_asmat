@@ -73,6 +73,8 @@ def process_file(file_path, processed_dir):
     )
     print("Update/Insert into vector DB complete.")
 
-    vector_store.getAllDocuments()
+    #vector_store.getAllDocuments()
+
+    vector_store.keywordSearch("Bakhoor")
 
     # move_file(file_path, processed_dir / file_path.name)

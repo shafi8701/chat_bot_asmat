@@ -70,7 +70,7 @@ class WeaviateStore(VectorStore):
                 ),
                 wvc.config.Property(
                     name="product_name",
-                    data_type=wvc.config.DataType.INT
+                    data_type=wvc.config.DataType.TEXT
                 ),
             ],
         )
@@ -138,19 +138,24 @@ class WeaviateStore(VectorStore):
 
     def keywordSearch(self, query: str, limit: int = 5):
         """
-        Perform BM25 keyword search on the 'text' field.
+        Perform BM25 keyword search on the 'text' field
+        and return results sorted by score DESC.
         """
         response = self.collection.query.bm25(
             query=query,
-            query_properties=["text"],  # search only inside text field
-            limit=limit
+            query_properties=["text", "product_name"],  # optional improvement
+            limit=limit,
+            return_metadata=wvc.query.MetadataQuery(score=True)
         )
 
         results = []
+
         for obj in getattr(response, "objects", []) or []:
             props = getattr(obj, "properties", {}) or {}
+            metadata = getattr(obj, "metadata", {}) or {}
 
             results.append({
+                "score": getattr(metadata, "score", 0.0),
                 "id": getattr(obj, "uuid", None),
                 "text": props.get("text"),
                 "source": props.get("source"),
@@ -158,7 +163,14 @@ class WeaviateStore(VectorStore):
                 "product_name": props.get("product_name"),
             })
 
-        for obj in results:
+
+       
+        # 🔥 Explicit sort by score DESC
+        results.sort(key=lambda x: x["score"] or 0.0, reverse=True)
+
+        # Add rank after sorting
+        for rank, obj in enumerate(results, start=1):
+            obj["rank"] = rank
             print(f"Document Object: {obj}")
 
         return results
