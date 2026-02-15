@@ -58,4 +58,8 @@ def process_file(file_path, processed_dir):
     )
     print(f"Update/Insert into vector DB complete.")
 
+    print(f"Fetching all the documents.")
+
+    vector_store.getAllDocuments()
+
     #move_file(file_path, processed_dir / file_path.name)

@@ -11,3 +11,8 @@ class VectorStore(ABC):
         metadata: List[Dict]
     ):
         pass
+
+    def getAllDocuments(
+        self
+    ):
+        pass
