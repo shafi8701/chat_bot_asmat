@@ -1,5 +1,5 @@
-chunking:
-  method: paragraph # fixed | overlap | paragraph
+chunking: 
+  method: section # fixed | overlap | paragraph | section
 
 fixed:
   chunk_size: 10
@@ -9,5 +9,9 @@ overlap:
   overlap_size: 2
 
 paragraph:
+  min_length: 5
+  max_length: 500
+
+section:
   min_length: 5
   max_length: 500

@@ -68,6 +68,10 @@ class WeaviateStore(VectorStore):
                     name="chunk_id",
                     data_type=wvc.config.DataType.INT
                 ),
+                wvc.config.Property(
+                    name="product_name",
+                    data_type=wvc.config.DataType.INT
+                ),
             ],
         )
 
@@ -92,6 +96,7 @@ class WeaviateStore(VectorStore):
                 "text": props.get("text"),
                 "source": props.get("source"),
                 "chunk_id": props.get("chunk_id"),
+                "product_name": props.get("product_name"),
             })
 
         for it in items:
@@ -105,32 +110,31 @@ class WeaviateStore(VectorStore):
         for text, vector, meta in zip(texts, vectors, metadata):
             src = meta["source"]
             cid = meta["chunk_id"]
+            product_name = meta.get("product_name")
             uid = self.deterministic_uuid(src, cid, text=str(text))
+
+            ##Creating properties object... Product name is optional...
+            properties= {
+                "text": text,
+                "source": src,
+                "chunk_id": cid,
+            }
+            # Only add if present (backward compatible)
+            if product_name:
+                properties["product_name"] = product_name
 
             if self._exists(uid):
                 # full replace semantics
                 self.collection.data.replace(
                     uuid=uid,
-                    properties={
-                        "text": text,
-                        "source": src,
-                        "chunk_id": cid,
-                    },
+                    properties=properties,
                     vector=vector,
                 )
             else:
                 self.collection.data.insert(
-                    properties={
-                        "text": text,
-                        "source": src,
-                        "chunk_id": cid,
-                    },
-                    uuid=uid,
+                    properties=properties,
                     vector=vector,
                 )
-    
-    ##Interface functions...... 
-    ###End
 
     def keywordSearch(self, query: str, limit: int = 5):
         """
@@ -140,7 +144,6 @@ class WeaviateStore(VectorStore):
             query=query,
             query_properties=["text"],  # search only inside text field
             limit=limit
-            return_metadata=wvc.query.MetadataQuery(score=True)
         )
 
         results = []
@@ -152,9 +155,13 @@ class WeaviateStore(VectorStore):
                 "text": props.get("text"),
                 "source": props.get("source"),
                 "chunk_id": props.get("chunk_id"),
+                "product_name": props.get("product_name"),
             })
 
         for obj in results:
             print(f"Document Object: {obj}")
 
         return results
+    
+    ##Interface functions...... 
+    ###End

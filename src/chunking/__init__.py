@@ -6,6 +6,7 @@ _chunking = None
 from src.chunking.fixed import FixedChunker
 from src.chunking.overlap import OverlapChunker
 from src.chunking.paragraph import ParagraphChunker
+from src.chunking.section import SectionChunker
 
 #YAML convert to readable json config...
 import yaml
@@ -42,6 +43,9 @@ def get_chunker():
     elif method == "paragraph":
         cfg = CONFIG["paragraph"]
         _chunking = ParagraphChunker(cfg["min_length"], cfg["max_length"])
+    elif method == "section":
+        cfg = CONFIG["section"]
+        _chunking = SectionChunker(cfg["min_length"], cfg["max_length"])
     else:
         raise ValueError(f"Unsupported chunking method: {method}")
     return _chunking
