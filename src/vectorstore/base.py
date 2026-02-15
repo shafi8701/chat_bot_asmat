@@ -16,3 +16,8 @@ class VectorStore(ABC):
         self
     ):
         pass
+
+    def keawordSearch(
+        self
+    ):
+        pass

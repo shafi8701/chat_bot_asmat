@@ -107,11 +107,7 @@ class WeaviateStore(VectorStore):
             cid = meta["chunk_id"]
             uid = self.deterministic_uuid(src, cid, text=str(text))
 
-            print(f"UID: {uid}")
-
-
             if self._exists(uid):
-                print(f"Exist is true. Replacing the item.")
                 # full replace semantics
                 self.collection.data.replace(
                     uuid=uid,
@@ -123,7 +119,6 @@ class WeaviateStore(VectorStore):
                     vector=vector,
                 )
             else:
-                print(f"Exist is false. Inserting the item.")
                 self.collection.data.insert(
                     properties={
                         "text": text,
@@ -136,3 +131,30 @@ class WeaviateStore(VectorStore):
     
     ##Interface functions...... 
     ###End
+
+    def keywordSearch(self, query: str, limit: int = 5):
+        """
+        Perform BM25 keyword search on the 'text' field.
+        """
+        response = self.collection.query.bm25(
+            query=query,
+            query_properties=["text"],  # search only inside text field
+            limit=limit
+            return_metadata=wvc.query.MetadataQuery(score=True)
+        )
+
+        results = []
+        for obj in getattr(response, "objects", []) or []:
+            props = getattr(obj, "properties", {}) or {}
+
+            results.append({
+                "id": getattr(obj, "uuid", None),
+                "text": props.get("text"),
+                "source": props.get("source"),
+                "chunk_id": props.get("chunk_id"),
+            })
+
+        for obj in results:
+            print(f"Document Object: {obj}")
+
+        return results
