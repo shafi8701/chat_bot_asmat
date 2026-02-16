@@ -74,11 +74,12 @@ def process_file(file_path, processed_dir):
     print("Update/Insert into vector DB complete.")
 
     #vector_store.getAllDocuments()
-
     #vector_store.keywordSearch("Bakhoor")
-
     user_query = "Arabic Perfume"
     user_query_vector = embedder.embed(user_query)
-    vector_store.semanticSearch(user_query_vector)
+    #vector_store.semanticSearch(user_query_vector)
+    
+    vector_store.hybridSearch(user_query, user_query_vector)
+
 
     # move_file(file_path, processed_dir / file_path.name)

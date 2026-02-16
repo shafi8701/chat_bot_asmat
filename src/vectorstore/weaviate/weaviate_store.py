@@ -132,6 +132,7 @@ class WeaviateStore(VectorStore):
                 )
             else:
                 self.collection.data.insert(
+                    uuid=uid,
                     properties=properties,
                     vector=vector,
                 )
@@ -215,5 +216,56 @@ class WeaviateStore(VectorStore):
         return results
 
 
+
+    def hybridSearch(self, query: str, query_vector: list[float], limit: int = 5, alpha: float = 0.7,):
+        """
+        Perform hybrid search combining:
+        - BM25 keyword search
+        - Vector semantic search
+
+        alpha:
+            0.0 -> pure keyword
+            1.0 -> pure vector
+            0.5 -> balanced (recommended default)
+        """
+
+        response = self.collection.query.hybrid(
+            query=query,
+            vector=query_vector,
+            alpha=alpha,
+            limit=limit,
+            query_properties=["text", "product_name"],
+            return_metadata=wvc.query.MetadataQuery(
+                score=True,
+                distance=True,
+            ),
+        )
+
+        results = []
+
+        for obj in getattr(response, "objects", []) or []:
+            props = getattr(obj, "properties", {}) or {}
+            metadata = getattr(obj, "metadata", {}) or {}
+
+            results.append({
+                "score": getattr(metadata, "score", 0.0),        # hybrid score
+                "distance": getattr(metadata, "distance", None), # vector distance
+                "id": getattr(obj, "uuid", None),
+                "text": props.get("text"),
+                "source": props.get("source"),
+                "chunk_id": props.get("chunk_id"),
+                "product_name": props.get("product_name"),
+            })
+
+        # Hybrid score is already ranked, but we enforce descending order
+        results.sort(key=lambda x: x["score"] or 0.0, reverse=True)
+
+        for rank, obj in enumerate(results, start=1):
+            obj["rank"] = rank
+            print(f"Document Object: {obj}")
+
+        return results
+
+            
     ##Interface functions...... 
     ###End

@@ -25,6 +25,13 @@ class VectorStore(ABC):
     
     def semanticSearch(
         self,
-        query
+        query_vector
+    ):
+        pass
+    
+    def hybridSearch(
+        self,
+        query,
+        query_vector
     ):
         pass
