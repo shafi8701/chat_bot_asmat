@@ -12,23 +12,27 @@ class VectorStore(ABC):
     ):
         pass
 
+    @abstractmethod
     def getAllDocuments(
         self
     ):
         pass
 
-    def keawordSearch(
+    @abstractmethod
+    def keywordSearch(
         self,
         query
     ):
         pass
     
+    @abstractmethod
     def semanticSearch(
         self,
         query_vector
     ):
         pass
     
+    @abstractmethod
     def hybridSearch(
         self,
         query,

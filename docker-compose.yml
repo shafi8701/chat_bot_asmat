@@ -35,5 +35,20 @@ services:
       WEAVIATE_URL: "http://weaviate:8080"
     restart: on-failure
 
+  chat_bot:
+    build: .
+    container_name: rag_bot
+    depends_on:
+      weaviate:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    environment:
+      WEAVIATE_URL: "http://weaviate:8080"
+    stdin_open: true
+    tty: true
+    command: python -m bot.py
+    restart: unless-stopped
+
 volumes:
   weaviate_data:
